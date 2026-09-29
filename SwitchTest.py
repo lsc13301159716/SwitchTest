@@ -387,16 +387,21 @@ def cmd_echo(args):
             now_ns = time.perf_counter_ns()
 
             if now_ns >= next_send:
-                seq += 1
+                # seq 只在发送成功之后才前进，以保证恒等式 seq == len(records) 始终成立。
+                # 回包时用 records[rseq-1] 按下标回填，这个恒等式是它的前提：
+                # 若发送失败也把 seq 加一，下标就永久错位，之后第一个回包即 IndexError 崩溃。
+                nxt_seq = seq + 1
                 ts = time.perf_counter_ns()
-                pkt = HDR.pack(TAG_ECHO, seq, ts) + filler
+                pkt = HDR.pack(TAG_ECHO, nxt_seq, ts) + filler
                 try:
                     s.sendto(pkt, addr)
+                except OSError as e:
+                    print(f"  发送失败: {e}")
+                else:
+                    seq = nxt_seq
                     pending[seq] = ts
                     sent += 1
                     records.append([seq, None])
-                except OSError as e:
-                    print(f"  发送失败: {e}")
                 next_send += interval_ns
                 if next_send < now_ns:
                     next_send = now_ns + interval_ns
