@@ -434,11 +434,16 @@ def cmd_echo(args):
 
             if time.time() - last_tick >= 1.0:
                 el = time.time() - t0
-                loss = (sent - recv) / sent * 100.0 if sent else 0.0
+                # 在途 = 已发出、回包还在路上。它既没收到、也还没超时。
+                # 若直接用 (sent - recv) 当丢包，这 1~2 个包会被误读成丢包；
+                # 且 RTT > interval 时（如 RTT 1.7 ms、间隔 1 ms）它必然长期挂着，
+                # 百分比还会随分母变大而"自己变小"，看起来像链路在慢慢恢复。
+                in_flight = len(pending)
+                loss = (sent - recv - in_flight) / sent * 100.0 if sent else 0.0
                 rtts = [r for _, r in records if r is not None]
                 avg = sum(rtts) / len(rtts) if rtts else 0.0
                 print(f"[{now_str()}] {el:6.1f}s | 发 {sent:>9,} 收 {recv:>9,} "
-                      f"| 丢包 {loss:6.3f}% | RTT 均 {avg:7.0f} µs")
+                      f"| 丢包 {loss:6.3f}% (在途 {in_flight}) | RTT 均 {avg:7.0f} µs")
                 last_tick = time.time()
 
             # 不 sleep：时延测量必须靠忙轮询才能拿到真实 RTT，
@@ -627,39 +632,45 @@ def main():
     sub = p.add_subparsers(dest="cmd", required=True)
 
     ps = sub.add_parser("server", help="接收端：回显 + 统计")
-    ps.add_argument("--bind", default="0.0.0.0")
-    ps.add_argument("--port", type=int, default=5001)
+    ps.add_argument("--bind", default="0.0.0.0", help="监听地址，全部网卡=0.0.0.0")
+    ps.add_argument("--port", type=int, default=5001, help="监听 UDP 端口，两端必须一致")
     ps.add_argument("--duration", type=float, default=0, help="运行秒数，0=不限")
     ps.add_argument("--fast", action="store_true",
                     help="极简回显模式：不做统计，只为压低响应延迟，测时延/抖动时用")
     ps.set_defaults(func=cmd_server)
 
     pe = sub.add_parser("echo", help="发送端：时延 / 抖动 / 丢包 / 中断检测")
-    pe.add_argument("--host", required=True)
-    pe.add_argument("--port", type=int, default=5001)
+    pe.add_argument("--host", required=True, help="服务端 IP（必需）")
+    pe.add_argument("--port", type=int, default=5001, help="服务端 UDP 端口，两端必须一致")
     pe.add_argument("--frame", type=int, default=64, help="以太网帧长 64~1518")
     pe.add_argument("--interval", type=float, default=0.01, help="发包间隔秒，0.001=1ms")
-    pe.add_argument("--duration", type=float, default=60)
+    pe.add_argument("--duration", type=float, default=60, help="正式统计时长秒")
     pe.add_argument("--timeout", type=float, default=0.05, help="单包超时秒")
     pe.add_argument("--warmup", type=float, default=1.0,
                     help="正式计时前的邻居探测秒数（建立 ARP，不计入统计），0=关闭")
-    pe.add_argument("--out", default="")
+    pe.add_argument("--out", default="", help="CSV 输出路径，留空自动命名")
     pe.set_defaults(func=cmd_echo)
 
     pf = sub.add_parser("flood", help="发送端：单向吞吐压测")
-    pf.add_argument("--host", required=True)
-    pf.add_argument("--port", type=int, default=5001)
-    pf.add_argument("--frame", type=int, default=1518)
+    pf.add_argument("--host", required=True, help="服务端 IP（必需）")
+    pf.add_argument("--port", type=int, default=5001, help="服务端 UDP 端口，两端必须一致")
+    pf.add_argument("--frame", type=int, default=1518, help="以太网帧长 64~1518")
     pf.add_argument("--bandwidth", type=float, default=100, help="Mbps，0=全速")
-    pf.add_argument("--duration", type=float, default=60)
+    pf.add_argument("--duration", type=float, default=60, help="打流时长秒")
     pf.add_argument("--warmup", type=float, default=1.0,
                     help="正式打流前的预热秒数（建立 ARP，不计入统计），0=关闭")
     pf.set_defaults(func=cmd_flood)
 
     pc = sub.add_parser("compare", help="对比两份 CSV 报告")
-    pc.add_argument("--a", required=True)
-    pc.add_argument("--b", required=True)
+    pc.add_argument("--a", required=True, help="基准版 CSV（原交换机）")
+    pc.add_argument("--b", required=True, help="对比版 CSV（国产交换机）")
     pc.set_defaults(func=cmd_compare)
+
+    # 让每个子命令的 --help 自动显示参数默认值。默认的 HelpFormatter 不显示，
+    # 于是"这个参数有默认值、可以不写"这件事在帮助里根本看不见。
+    # 必须在全部 add_parser 之后执行，否则 sub.choices 还是空的。
+    for _sp in sub.choices.values():
+        _sp.formatter_class = argparse.ArgumentDefaultsHelpFormatter
 
     args = p.parse_args()
     if args.cmd in ("echo", "flood") and not (64 <= args.frame <= 1518):
