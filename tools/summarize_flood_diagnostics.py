@@ -6,7 +6,7 @@ import statistics
 from collections import Counter
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / 'out/analysis_all_FLOOD_20261026'
 REPORT = ROOT / '报告/FLOOD全部未到达排查汇总_20261026.md'
 

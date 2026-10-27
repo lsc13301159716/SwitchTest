@@ -8,7 +8,7 @@ from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 DEST = ROOT / '报告'
 DEST.mkdir(exist_ok=True)
 data = json.loads((ROOT/'out/analysis_20261014/analysis.json').read_text(encoding='utf-8'))

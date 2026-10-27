@@ -1,6 +1,6 @@
 # 交换机测试工具修复版 v2
 
-这是桌面 `C:\Users\LSC\Desktop\Code\SwitchTest\SwitchTest.py` 的独立修复版。原文件未修改。只使用 Python 标准库，建议 Python 3.10 及以上；本次在 Windows / Python 3.13 上验证。
+主测试程序只使用 Python 标准库，建议 Python 3.10 及以上；已在 Windows / Python 3.13 上验证。
 
 ## 开始使用
 
@@ -92,7 +92,23 @@ CSV 的 `missing_seq` 是正式包号，`session` 用来和抓包匹配。`basis
 SwitchTest.py   CLI、socket 生命周期、进程调度、报告和 CSV
 switch_core.py 协议、ReceiveLedger 接收去重、EchoLedger 超时与回包状态
 test_switch.py 状态机、UDP 回环及 Windows spawn 多进程回归测试
+test_logging.py 自动日志与中文路径回归测试
+国产交换机短时测试操作规程.md 现场操作说明
+tools/        抓包分析、历史结果汇总、端点诊断和报告生成脚本
+docs/         架构说明、历史判据建议与需求核查
+out/          测试日志、逐包记录和分析结果（保留）
+WireShark抓包/ 原始双端抓包（保留）
+报告/         各版报告、补充记录及相关编辑脚本（保留）
 ```
+
+分析脚本已移入 `tools/`。在项目根目录运行，例如：
+
+```powershell
+python tools/analyze_flood_capture.py 发送端.pcapng 接收端.pcapng --out out/capture_analysis_new
+python tools/analyze_runtime_loss.py 会话编号
+```
+
+带日期的汇总和报告生成脚本用于复核相应历史数据；运行前查看其中的数据路径及输出位置，避免覆盖已整理的分析结果。报告生成脚本需要额外的文档处理依赖。
 
 测量状态不依赖命令行或网络 I/O，方便独立复现超时、重复和乱序情况。保持原命令入口，避免同时大幅更换使用方式。echo 会保留完整每包记录，长时间小间隔测试仍会消耗较多内存；接收端去重位图约需每个序号一位，并另有每页和每流开销。未加入磁盘流式记录或多核接收端；这些性能改造应在真实设备基线之后评估。
 
@@ -147,6 +163,6 @@ python -m unittest -v test_switch
 
 ## 程序文件与架构
 
-现场运行只需SwitchTest.py和switch_core.py。test_switch.py、test_logging.py用于开发回归验证，不是现场启动依赖；建议在项目中保留。模块图、通信时序和文件职责见[程序架构说明](程序架构说明.md)。
+现场运行只需SwitchTest.py和switch_core.py。test_switch.py、test_logging.py用于开发回归验证，不是现场启动依赖；建议在项目中保留。模块图、通信时序和文件职责见[程序架构说明](docs/程序架构说明.md)。
 
 2026年10月13日清理：移除被自动日志替代的run_logged.py及未使用的NetCheck.py，保留测量代码、回归测试、操作与判读文档。__pycache__是可再生成缓存；.idea是IDE配置。原始CSV和日志应保留，不作为缓存清理。

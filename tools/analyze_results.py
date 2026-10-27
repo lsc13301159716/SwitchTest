@@ -5,7 +5,7 @@ import re
 from collections import Counter
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / 'out'
 DEST = OUT / 'analysis_20261014'
 DEST.mkdir(exist_ok=True)

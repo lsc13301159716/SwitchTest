@@ -5,8 +5,11 @@ import json
 import multiprocessing as mp
 from pathlib import Path
 import socket
+import sys
 import time
 
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 import SwitchTest as app
 from switch_core import TAG_ECHO
 
@@ -108,7 +111,7 @@ if __name__ == '__main__':
     results = [experiment(mode) for mode in ('baseline', 'client_pause', 'server_pause', 'output_pause')]
     if results[0]['on_time'] == 0:
         raise RuntimeError('No loopback baseline replies: environment invalid; results not saved')
-    output = Path(__file__).parent / 'out' / 'endpoint_diagnosis_20261014'
+    output = ROOT / 'out' / 'endpoint_diagnosis_20261014'
     output.mkdir(exist_ok=True)
     (output / 'controlled_experiments.json').write_text(
         json.dumps(results, ensure_ascii=False, indent=2), encoding='utf-8')

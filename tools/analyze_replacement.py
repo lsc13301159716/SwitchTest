@@ -15,7 +15,7 @@ from pathlib import Path
 
 from analyze_flood_capture import scan, ranges, public
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / 'out/replacement_analysis_20261026'
 BRANDS = ('WAGO', 'Weidmuller')
 
