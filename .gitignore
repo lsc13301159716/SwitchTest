@@ -1,16 +1,27 @@
-# PyCharm
+# IDE and Python caches
 .idea/
 *.iml
-
-# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# 虚拟环境
+*.py[cod]
+.pytest_cache/
+.venv/
 venv/
 env/
 
-# 日志
+# Local measurements, captures, generated reports and upload metadata
+/out/
+/WireShark抓包/
+/报告/
 *.log
+*.pcap
+*.pcapng
+*.cap
+
+# Local credentials and environment configuration
+.env
+.env.*
+!.env.example
+
+# Temporary files
+~$*
+*.tmp

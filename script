@@ -1,0 +1,6 @@
+$floodStamp = Get-Date -Format 'yyyyMMdd_HHmmss'
+$floodCase = "${floodStamp}_Weidmuller_FLOOD_A16_B01_F1518_M100_D60_R01"
+New-Item -ItemType Directory -Force .\out\FLOOD | Out-Null
+$floodServerLog = Join-Path .\out\FLOOD ($floodCase + '_server.log')
+Write-Host "请将本轮编号复制给PC-A：$floodCase"
+python -u .\SwitchTest.py server --bind 192.168.214.231 --port 5001 --duration 0 --log $floodServerLog
