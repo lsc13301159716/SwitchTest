@@ -7,7 +7,7 @@ from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / 'out/analysis_all_FLOOD_20261026'
+OUT = ROOT / '分析结果/analysis_all_FLOOD_20261026'
 REPORT = ROOT / '报告/FLOOD全部未到达排查汇总_20261026.md'
 
 
@@ -33,7 +33,7 @@ def warm_stats(cap, session):
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     captures = {}
-    for path in sorted((ROOT / 'out').glob('capture_analysis*/analysis.json')):
+    for path in sorted((ROOT / '分析结果').glob('capture_analysis*/analysis.json')):
         d = json.loads(path.read_text(encoding='utf-8'))
         for session, cmp in d['comparison'].items():
             if not cmp.get('client_unique') or not cmp.get('server_unique'):
@@ -158,9 +158,9 @@ def main():
         '6. 为得到明确丢包位置，需提高接收捕获可靠性，或添加交换机端口计数/镜像等独立证据；也可让接收程序导出最终缺失序号清单，与双端pcap自动交叉核对。镜像/抓包自身仍需检查丢弃。', '',
         '按当前判定规则，已完成且最终有未到达的轮次仍记FAIL，并附“端到端未到达，责任设备未定/启动条件异常”等说明；正常复测另列。这里不把启动缺失自行改成INVALID，不改写正式Word报告。', '',
         '## 归档文件', '',
-        '- `out/analysis_all_FLOOD_20261026/summary.json`：全部轮次、日志位置、缺口变化时间、配对捕获核验与预热统计。',
-        '- `out/analysis_all_FLOOD_20261026/all_rounds.csv`：全部轮次索引。',
-        '- `out/capture_analysis_Weidmuller_A13_20261026`至`A16_20261026`：新增四组双端分析及包号差异CSV。',
+        '- `分析结果/analysis_all_FLOOD_20261026/summary.json`：全部轮次、日志位置、缺口变化时间、配对捕获核验与预热统计。',
+        '- `分析结果/analysis_all_FLOOD_20261026/all_rounds.csv`：全部轮次索引。',
+        '- `分析结果/capture_analysis_Weidmuller_A13_20261026`至`A16_20261026`：新增四组双端分析及包号差异CSV。',
         '- 旧轮次的逐包分析与先前补充记录继续保留。所有原始日志和pcap均未修改。', '']
     REPORT.write_text('\n'.join(lines), encoding='utf-8')
     print(json.dumps(dict(counts=counts, report=str(REPORT), paired_sessions=sum('capture' in r for r in rows),

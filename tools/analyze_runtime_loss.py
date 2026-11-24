@@ -19,7 +19,7 @@ def spacing(packets, low, high, column):
 
 def main():
     ap=argparse.ArgumentParser(); ap.add_argument('session'); args=ap.parse_args()
-    summary=json.loads(Path('out/analysis_all_FLOOD_20261026/summary.json').read_text(encoding='utf-8'))
+    summary=json.loads(Path('分析结果/analysis_all_FLOOD_20261026/summary.json').read_text(encoding='utf-8'))
     row=next(r for r in summary['rows'] if r['session']==args.session)
     cached=json.loads(Path(row['capture']['analysis']).read_text(encoding='utf-8'))
     client=scan(Path(cached['client']['path'])); server=scan(Path(cached['server']['path']))
@@ -69,7 +69,7 @@ def main():
                          'Missing receiver capture IDs may be capture drops; candidate boundaries are not proven application loss IDs.',
                          'Offset ranges and differences of spans cancel fixed clock offsets but still include clock drift and capture timing effects.'],events=events,
                 client_whole_embedded_spacing=spacing(cp,min(cp),max(cp),1))
-    out=Path('out/runtime_loss_analysis_20261027');out.mkdir(exist_ok=True)
+    out=Path('分析结果/runtime_loss_analysis_20261027');out.mkdir(exist_ok=True)
     (out/f'{args.session}.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
     print(json.dumps(dict(brand=row['brand'],port=row['port_a'],session=args.session,events=[{k:v for k,v in e.items() if k not in ('candidate_ranges','candidate_boundaries','receiver_arp_in_log_window')}|{'arp_count':len(e['receiver_arp_in_log_window']),'notable_boundaries':e['candidate_boundaries'][:2]} for e in events]),ensure_ascii=False))
 

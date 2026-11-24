@@ -11,7 +11,7 @@ from docx.oxml.ns import qn
 ROOT = Path(__file__).resolve().parent.parent
 DEST = ROOT / '报告'
 DEST.mkdir(exist_ok=True)
-data = json.loads((ROOT/'out/analysis_20261014/analysis.json').read_text(encoding='utf-8'))
+data = json.loads((ROOT/'分析结果/analysis_20261014/analysis.json').read_text(encoding='utf-8'))
 rounds, events = data['rounds'], data['events']
 doc = Document()
 sec = doc.sections[0]
@@ -211,7 +211,7 @@ h('7 3 最终结论填写区',2)
 p('截至【日期时间待补】，累计完成直连【待补】轮、WAGO【待补】轮、Weidmuller【待补】轮；最长单轮【待补】分钟。异常复核结果为【待补】，已确认原因及证据为【待补】，尚未解释事件为【待补】。')
 p('在【实际负载、端口范围、时限及试验环境待补】条件下，设备对业务时限及转发可靠性要求的满足情况为【待补】。结合【生产验证或报警记录待补】，使用或替换意见为【待补】，适用限制为【待补】。')
 h('附录说明')
-p('附录A、B记录两台各16组接线的三种帧长短测结果，单元格格式为“尝试数 / 超时数”。本批全部超时均为最终收到的迟到包，未回包及本地发送失败均为0。异常值以“＊”标记，具体包号见第5章。逐轮参数、时延及文件名索引保存在out/analysis_20261014/round_summary.csv，9个异常包保存在exception_packets.csv。')
+p('附录A、B记录两台各16组接线的三种帧长短测结果，单元格格式为“尝试数 / 超时数”。本批全部超时均为最终收到的迟到包，未回包及本地发送失败均为0。异常值以“＊”标记，具体包号见第5章。逐轮参数、时延及文件名索引保存在分析结果/analysis_20261014/round_summary.csv，9个异常包保存在exception_packets.csv。')
 
 h('附录C 原始证据索引与补充记录')
 p('DIRECT目录为直连记录，WAGO与Weidmuller目录为相应交换机记录，BATCH目录为服务端日志。文件前缀日期时间为批次标签；各帧实际启动时间以日志“启动时间”字段为准。报告本版结果对应既有99轮分析快照，进行中的新轮次完成后另行追加。')

@@ -1,6 +1,6 @@
 """Recompute archived evidence for the WAGO replacement assessment.
 
-Only writes into out/replacement_analysis_20261026. Does not run network tests.
+Only writes into 分析结果/replacement_analysis_20261026. Does not run network tests.
 """
 import argparse
 import csv
@@ -16,7 +16,7 @@ from pathlib import Path
 from analyze_flood_capture import scan, ranges, public
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / 'out/replacement_analysis_20261026'
+OUT = ROOT / '分析结果/replacement_analysis_20261026'
 BRANDS = ('WAGO', 'Weidmuller')
 
 
@@ -329,7 +329,7 @@ def refine_captures():
             if r['session'] in d['comparison'] and d['comparison'][r['session']].get('expected'):
                 d['comparison'][r['session']]=r
         p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf-8')
-    old=json.loads((ROOT/'out/analysis_all_FLOOD_20261026/summary.json').read_text(encoding='utf-8'))
+    old=json.loads((ROOT/'分析结果/analysis_all_FLOOD_20261026/summary.json').read_text(encoding='utf-8'))
     for r in old['rows']:
         if 'capture' not in r:
             continue

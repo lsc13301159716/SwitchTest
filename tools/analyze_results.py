@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / 'out'
-DEST = OUT / 'analysis_20261014'
+DEST = ROOT / '分析结果/analysis_20261014'
 DEST.mkdir(exist_ok=True)
 
 def quantile(values, p):

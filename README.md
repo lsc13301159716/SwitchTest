@@ -96,7 +96,9 @@ test_logging.py 自动日志与中文路径回归测试
 国产交换机短时测试操作规程.md 现场操作说明
 tools/        抓包分析、历史结果汇总、端点诊断和报告生成脚本
 docs/         架构说明、历史判据建议与需求核查
-out/          测试日志、逐包记录和分析结果（保留）
+out/          原始测试日志、逐包记录及缺失包号清单
+分析结果/     历史汇总、抓包分析和报告中间结果
+归档记录/     目录整理、上传清单及移动校验记录
 WireShark抓包/ 原始双端抓包（保留）
 报告/         各版报告、补充记录及相关编辑脚本（保留）
 ```
@@ -104,7 +106,7 @@ WireShark抓包/ 原始双端抓包（保留）
 分析脚本已移入 `tools/`。在项目根目录运行，例如：
 
 ```powershell
-python tools/analyze_flood_capture.py 发送端.pcapng 接收端.pcapng --out out/capture_analysis_new
+python tools/analyze_flood_capture.py 发送端.pcapng 接收端.pcapng --out 分析结果/capture_analysis_new
 python tools/analyze_runtime_loss.py 会话编号
 ```
 

@@ -13,7 +13,7 @@ from docx.oxml.ns import qn
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA = ROOT/'out/replacement_analysis_20261026'
+DATA = ROOT/'分析结果/replacement_analysis_20261026'
 DEST = ROOT/'报告'
 STEM = 'WAGO替换Weidmuller综合数据分析与评估_20261026'
 E = json.loads((DATA/'echo.json').read_text(encoding='utf-8'))
